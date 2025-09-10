@@ -40,7 +40,6 @@
   },
   "dependencies": {},
   "jest": {
-    "preset": "jest-preset-es-modules",
     "testEnvironment": "jsdom",
     "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
     "collectCoverageFrom": [
@@ -53,13 +52,7 @@
       "<rootDir>/tests/**/*.spec.js"
     ],
     "moduleFileExtensions": ["js", "json"],
-    "transform": {},
-    "extensionsToTreatAsEsm": [".js"],
-    "globals": {
-      "jest": {
-        "useESM": true
-      }
-    }
+    "transform": {}
   },
   "engines": {
     "node": ">=16.0.0"

@@ -1,12 +1,12 @@
 // ABOUTME: Contract tests for IsItClear extension internal APIs
 // ABOUTME: Validates extension component communication schemas match contracts
 
-import { describe, it, expect, beforeEach, jest } from '@jest/globals'
-import { validateInputFieldData } from '../../src/lib/models/TextContent.js'
-import { validateClarityAnalysisResult, validateTextChange } from '../../src/lib/models/ClarityImprovement.js'
-import { validateUserAction } from '../../src/lib/models/UserAction.js'
-import { validateUIState } from '../../src/lib/models/UIState.js'
-import { validateExtensionMessage, handleExtensionMessage } from '../../src/lib/models/ExtensionMessage.js'
+const { describe, it, expect, beforeEach } = require('@jest/globals')
+const { validateInputFieldData } = require('../../src/lib/models/text-content.js')
+const { validateClarityAnalysisResult, validateTextChange } = require('../../src/lib/models/clarity-improvement.js')
+const { validateUserAction } = require('../../src/lib/models/UserAction.js')
+const { validateUIState } = require('../../src/lib/models/UIState.js')
+const { validateExtensionMessage, handleExtensionMessage } = require('../../src/lib/models/ExtensionMessage.js')
 
 describe('Extension Internal API Contract Tests', () => {
   let mockInputElement
