@@ -1,0 +1,67 @@
+{
+  "name": "isitclear",
+  "version": "1.0.0",
+  "description": "Chrome extension that uses Gemini Nano AI to improve text clarity in any input field",
+  "main": "src/background/background.js",
+  "scripts": {
+    "test": "jest",
+    "test:integration": "jest --testPathPattern=tests/integration",
+    "test:contract": "jest --testPathPattern=tests/contract",
+    "test:unit": "jest --testPathPattern=tests/unit",
+    "test:performance": "jest --testPathPattern=tests/performance",
+    "build": "npm run lint && npm run test",
+    "dev": "npm run lint",
+    "lint": "eslint src/ tests/ --ext .js",
+    "lint:fix": "eslint src/ tests/ --ext .js --fix",
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\""
+  },
+  "keywords": [
+    "chrome-extension",
+    "ai",
+    "text-clarity",
+    "gemini-nano",
+    "writing-assistant"
+  ],
+  "author": "Niko",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chrome": "^0.0.246",
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "jest": "^27.5.1",
+    "jest-chrome": "^0.8.0",
+    "jest-environment-jsdom": "^27.5.1",
+    "prettier": "^3.1.1",
+    "puppeteer": "^21.6.1",
+    "selenium-webdriver": "^4.15.0"
+  },
+  "dependencies": {},
+  "jest": {
+    "preset": "jest-preset-es-modules",
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.test.js"
+    ],
+    "coverageDirectory": "coverage",
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.js",
+      "<rootDir>/tests/**/*.spec.js"
+    ],
+    "moduleFileExtensions": ["js", "json"],
+    "transform": {},
+    "extensionsToTreatAsEsm": [".js"],
+    "globals": {
+      "jest": {
+        "useESM": true
+      }
+    }
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

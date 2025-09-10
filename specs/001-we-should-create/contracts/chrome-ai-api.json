@@ -1,0 +1,239 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Chrome AI API Integration Contract",
+    "version": "1.0.0",
+    "description": "Contract for Chrome's built-in AI APIs (Rewriter, Prompt) integration in IsItClear extension"
+  },
+  "components": {
+    "schemas": {
+      "TextAnalysisRequest": {
+        "type": "object",
+        "required": ["text", "apiType"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000,
+            "description": "Original text to be analyzed for clarity"
+          },
+          "apiType": {
+            "type": "string",
+            "enum": ["rewriter", "prompt"],
+            "description": "Which Chrome AI API to use"
+          },
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "tone": {
+                "type": "string",
+                "enum": ["more-formal", "as-is", "more-casual"],
+                "default": "as-is"
+              },
+              "length": {
+                "type": "string",
+                "enum": ["shorter", "as-is", "longer"],
+                "default": "as-is"
+              },
+              "format": {
+                "type": "string",
+                "enum": ["plain-text", "markdown"],
+                "default": "plain-text"
+              }
+            }
+          }
+        }
+      },
+      "TextAnalysisResponse": {
+        "type": "object",
+        "required": ["success", "improvedText"],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "improvedText": {
+            "type": "string",
+            "description": "AI-improved version of the text"
+          },
+          "confidenceScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "AI confidence in the improvement"
+          },
+          "processingTime": {
+            "type": "number",
+            "description": "Time taken to process in milliseconds"
+          },
+          "apiUsed": {
+            "type": "string",
+            "enum": ["rewriter", "prompt"]
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": ["API_UNAVAILABLE", "SESSION_FAILED", "TEXT_TOO_LONG", "PROCESSING_ERROR"]
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "SessionCreateRequest": {
+        "type": "object",
+        "required": ["apiType"],
+        "properties": {
+          "apiType": {
+            "type": "string",
+            "enum": ["rewriter", "prompt"]
+          },
+          "defaultParameters": {
+            "type": "object",
+            "properties": {
+              "tone": {
+                "type": "string",
+                "enum": ["more-formal", "as-is", "more-casual"]
+              },
+              "length": {
+                "type": "string",
+                "enum": ["shorter", "as-is", "longer"]
+              }
+            }
+          }
+        }
+      },
+      "SessionCreateResponse": {
+        "type": "object",
+        "required": ["success"],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Unique identifier for the AI session"
+          },
+          "capabilities": {
+            "type": "object",
+            "properties": {
+              "maxTextLength": {
+                "type": "number"
+              },
+              "supportedLanguages": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": ["API_NOT_AVAILABLE", "INSUFFICIENT_RESOURCES", "PERMISSION_DENIED"]
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/ai/analyze": {
+      "post": {
+        "summary": "Analyze text for clarity improvements",
+        "description": "Sends text to Chrome AI APIs for clarity analysis and improvement",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextAnalysisRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Text analysis completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextAnalysisResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request format or text too long"
+          },
+          "503": {
+            "description": "AI service unavailable"
+          }
+        }
+      }
+    },
+    "/ai/session": {
+      "post": {
+        "summary": "Create new AI session",
+        "description": "Initialize a new session with Chrome AI APIs for performance optimization",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCreateResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "AI service unavailable or insufficient resources"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Destroy AI session",
+        "description": "Clean up AI session to free resources",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session destroyed successfully"
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        }
+      }
+    }
+  }
+}

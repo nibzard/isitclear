@@ -1,0 +1,302 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "IsItClear Extension Internal API Contract",
+    "version": "1.0.0",
+    "description": "Internal API contract for communication between extension components"
+  },
+  "components": {
+    "schemas": {
+      "InputFieldData": {
+        "type": "object",
+        "required": ["element", "fieldType", "text"],
+        "properties": {
+          "element": {
+            "type": "string",
+            "description": "CSS selector for the input field"
+          },
+          "fieldType": {
+            "type": "string",
+            "enum": ["input", "textarea", "contenteditable"]
+          },
+          "text": {
+            "type": "string",
+            "description": "Current text content"
+          },
+          "cursorPosition": {
+            "type": "number",
+            "description": "Current cursor position in the text"
+          },
+          "selectionStart": {
+            "type": "number"
+          },
+          "selectionEnd": {
+            "type": "number"
+          }
+        }
+      },
+      "ClarityAnalysisResult": {
+        "type": "object",
+        "required": ["originalText", "improvedText", "changes"],
+        "properties": {
+          "originalText": {
+            "type": "string"
+          },
+          "improvedText": {
+            "type": "string"
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TextChange"
+            }
+          },
+          "confidenceScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "processingTime": {
+            "type": "number"
+          },
+          "improvementType": {
+            "type": "string",
+            "enum": ["rewriter", "prompt"]
+          }
+        }
+      },
+      "TextChange": {
+        "type": "object",
+        "required": ["changeType", "originalPhrase", "improvedPhrase", "reason"],
+        "properties": {
+          "changeType": {
+            "type": "string",
+            "enum": ["word-choice", "sentence-structure", "clarity", "conciseness"]
+          },
+          "originalPhrase": {
+            "type": "string"
+          },
+          "improvedPhrase": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Explanation of why this change improves clarity"
+          },
+          "startPosition": {
+            "type": "number"
+          },
+          "endPosition": {
+            "type": "number"
+          }
+        }
+      },
+      "UserAction": {
+        "type": "object",
+        "required": ["action"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["accept", "reject", "analyze", "undo", "settings"]
+          },
+          "data": {
+            "type": "object",
+            "description": "Additional data based on action type"
+          }
+        }
+      },
+      "UIState": {
+        "type": "object",
+        "required": ["visible", "position"],
+        "properties": {
+          "visible": {
+            "type": "boolean"
+          },
+          "position": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            }
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["idle", "analyzing", "showing-results", "error"]
+          },
+          "progress": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Analysis progress percentage"
+          }
+        }
+      },
+      "ExtensionMessage": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "INPUT_DETECTED",
+              "ANALYZE_TEXT",
+              "ANALYSIS_RESULT",
+              "USER_ACTION",
+              "UI_UPDATE",
+              "ERROR",
+              "PREFERENCES_CHANGED"
+            ]
+          },
+          "payload": {
+            "type": "object",
+            "description": "Message-specific data"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "source": {
+            "type": "string",
+            "enum": ["content-script", "background", "popup", "options"]
+          },
+          "target": {
+            "type": "string",
+            "enum": ["content-script", "background", "popup", "options"]
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/extension/input-detected": {
+      "post": {
+        "summary": "Notify when text input field is detected",
+        "description": "Content script notifies other components about input field activation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InputFieldData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Input detection acknowledged"
+          }
+        }
+      }
+    },
+    "/extension/analyze": {
+      "post": {
+        "summary": "Request text clarity analysis",
+        "description": "Trigger AI analysis for text improvement",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["inputField", "userPreferences"],
+                "properties": {
+                  "inputField": {
+                    "$ref": "#/components/schemas/InputFieldData"
+                  },
+                  "userPreferences": {
+                    "type": "object",
+                    "properties": {
+                      "tone": {
+                        "type": "string",
+                        "enum": ["formal", "neutral", "casual"]
+                      },
+                      "showDetails": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Analysis completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClarityAnalysisResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or analysis failed"
+          }
+        }
+      }
+    },
+    "/extension/user-action": {
+      "post": {
+        "summary": "Handle user interaction",
+        "description": "Process user actions like accept, reject, undo",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Action processed successfully"
+          }
+        }
+      }
+    },
+    "/extension/ui-state": {
+      "get": {
+        "summary": "Get current UI state",
+        "responses": {
+          "200": {
+            "description": "Current UI state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UIState"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update UI state",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UIState"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "UI state updated"
+          }
+        }
+      }
+    }
+  }
+}

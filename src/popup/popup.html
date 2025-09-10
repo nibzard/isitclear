@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IsItClear</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="popup-container">
+        <!-- Header -->
+        <header class="popup-header">
+            <div class="logo">
+                <span class="logo-icon">✨</span>
+                <span class="logo-text">IsItClear</span>
+            </div>
+            <div class="version">v1.0.0</div>
+        </header>
+
+        <!-- Status Section -->
+        <section class="status-section">
+            <div class="status-card" id="status-card">
+                <div class="status-indicator" id="status-indicator"></div>
+                <div class="status-content">
+                    <div class="status-title" id="status-title">Loading...</div>
+                    <div class="status-subtitle" id="status-subtitle">Checking extension status</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="actions-section">
+            <button class="action-button primary" id="analyze-button" disabled>
+                <span class="button-icon">🔍</span>
+                <span class="button-text">Analyze Current Field</span>
+            </button>
+            
+            <button class="action-button secondary" id="settings-button">
+                <span class="button-icon">⚙️</span>
+                <span class="button-text">Settings</span>
+            </button>
+        </section>
+
+        <!-- Statistics -->
+        <section class="stats-section" id="stats-section" style="display: none;">
+            <h3 class="section-title">Usage Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="analysis-count">0</div>
+                    <div class="stat-label">Analyses</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="acceptance-rate">0%</div>
+                    <div class="stat-label">Acceptance</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avg-processing-time">0ms</div>
+                    <div class="stat-label">Avg. Time</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chrome AI Status -->
+        <section class="ai-status-section">
+            <h3 class="section-title">Chrome AI Status</h3>
+            <div class="ai-status-grid">
+                <div class="ai-api-status">
+                    <span class="api-name">Rewriter API</span>
+                    <span class="api-status" id="rewriter-status">Checking...</span>
+                </div>
+                <div class="ai-api-status">
+                    <span class="api-name">Prompt API</span>
+                    <span class="api-status" id="prompt-status">Checking...</span>
+                </div>
+            </div>
+            
+            <div class="chrome-info">
+                <span class="chrome-version" id="chrome-version">Chrome Version: Checking...</span>
+            </div>
+        </section>
+
+        <!-- Quick Settings -->
+        <section class="quick-settings-section">
+            <h3 class="section-title">Quick Settings</h3>
+            
+            <div class="setting-item">
+                <label class="setting-label" for="activation-method">Activation Method</label>
+                <select class="setting-select" id="activation-method">
+                    <option value="auto">Auto (when typing)</option>
+                    <option value="shortcut">Keyboard shortcut only</option>
+                    <option value="manual">Manual activation only</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <label class="setting-label" for="preferred-tone">Preferred Tone</label>
+                <select class="setting-select" id="preferred-tone">
+                    <option value="formal">Formal</option>
+                    <option value="neutral">Neutral</option>
+                    <option value="casual">Casual</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <label class="setting-checkbox">
+                    <input type="checkbox" id="show-change-details">
+                    <span class="checkmark"></span>
+                    <span class="checkbox-label">Show change details</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="popup-footer">
+            <div class="footer-links">
+                <button class="link-button" id="help-button">Help</button>
+                <button class="link-button" id="feedback-button">Feedback</button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
